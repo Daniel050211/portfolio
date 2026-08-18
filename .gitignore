@@ -45,3 +45,5 @@ next-env.d.ts
 
 # installed agent skills (not project code)
 /.agents
+
+.vercel
