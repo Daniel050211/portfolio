@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Copy,
@@ -12,14 +12,16 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { navLinks, projects, site } from "@/lib/site";
+import { hasProfileUrl, navLinks, projects, site } from "@/lib/site";
+import { useModKeyLabel } from "@/lib/mod-key";
+import { GithubIcon } from "@/components/github-icon";
 
 type CommandItem = {
   id: string;
   group: string;
   label: string;
   hint?: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   run: () => void;
 };
 
@@ -35,7 +37,10 @@ export function CommandPalette({
   const [copied, setCopied] = useState(false);
   const [lastResetKey, setLastResetKey] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const { resolvedTheme, setTheme } = useTheme();
+  const modKey = useModKeyLabel();
+  const isDark = (resolvedTheme ?? "dark") === "dark";
 
   const close = useCallback(() => {
     onOpenChange(false);
@@ -49,7 +54,7 @@ export function CommandPalette({
       setCopied(true);
       setTimeout(() => setCopied(false), 1600);
     } catch {
-      window.location.href = `mailto:${site.email}`;
+      window.open(`mailto:${site.email}`);
     }
   }, []);
 
@@ -100,7 +105,7 @@ export function CommandPalette({
         icon: <Mail className="h-4 w-4" />,
         run: () => {
           close();
-          window.location.href = `mailto:${site.email}`;
+          window.open(`mailto:${site.email}`);
         },
       },
       {
@@ -131,22 +136,34 @@ export function CommandPalette({
       {
         id: "theme",
         group: "Actions",
-        label:
-          resolvedTheme === "dark" ? "Switch to light mode" : "Switch to dark mode",
-        icon:
-          resolvedTheme === "dark" ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          ),
+        label: isDark ? "Switch to light mode" : "Switch to dark mode",
+        icon: isDark ? (
+          <Sun className="h-4 w-4" />
+        ) : (
+          <Moon className="h-4 w-4" />
+        ),
         run: () => {
-          setTheme(resolvedTheme === "dark" ? "light" : "dark");
+          setTheme(isDark ? "light" : "dark");
         },
       },
     ];
 
+    if (hasProfileUrl(site.github)) {
+      actions.splice(3, 0, {
+        id: "github",
+        group: "Actions",
+        label: "Open GitHub",
+        hint: site.github,
+        icon: <GithubIcon className="h-4 w-4" />,
+        run: () => {
+          close();
+          window.open(site.github, "_blank", "noopener,noreferrer");
+        },
+      });
+    }
+
     return [...nav, ...projectItems, ...actions];
-  }, [close, copied, copyEmail, resolvedTheme, setTheme]);
+  }, [close, copied, copyEmail, isDark, setTheme]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -159,19 +176,24 @@ export function CommandPalette({
     );
   }, [items, query]);
 
-  // Reset highlight whenever the query or palette visibility changes.
-  // Adjusted during render (React-recommended) to avoid setState-in-effect.
+  const groups = Array.from(new Set(filtered.map((i) => i.group)));
+
   const resetKey = `${open}-${query}`;
   if (resetKey !== lastResetKey) {
     setLastResetKey(resetKey);
     setActive(0);
   }
 
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+  }, [open]);
+
   useEffect(() => {
-    if (open) {
-      const t = setTimeout(() => inputRef.current?.focus(), 20);
-      return () => clearTimeout(t);
-    }
+    if (!open) return;
+    const t = setTimeout(() => inputRef.current?.focus(), 20);
+    return () => clearTimeout(t);
   }, [open]);
 
   useEffect(() => {
@@ -180,32 +202,23 @@ export function CommandPalette({
         e.preventDefault();
         onOpenChange(!open);
       }
-      if (e.key === "Escape" && open) {
-        e.preventDefault();
-        close();
-      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [close, onOpenChange, open]);
+  }, [onOpenChange, open]);
 
   if (!open) return null;
 
-  const groups = Array.from(new Set(filtered.map((i) => i.group)));
-
   return (
-    <div
-      className="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh] sm:pt-[18vh]"
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={dialogRef}
+      className="cmd-dialog"
       aria-label="Command palette"
+      onClose={close}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) close();
+      }}
     >
-      <button
-        type="button"
-        className="cmd-backdrop absolute inset-0 cursor-pointer"
-        aria-label="Close command palette"
-        onClick={close}
-      />
       <div
         className="modal-enter relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl shadow-black/30"
         data-lenis-prevent
@@ -229,7 +242,7 @@ export function CommandPalette({
               }
             }}
             placeholder="Jump to section, open project, copy email…"
-            className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0"
             aria-autocomplete="list"
             aria-controls="command-list"
           />
@@ -299,11 +312,13 @@ export function CommandPalette({
           })}
         </div>
 
-        <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-[11px] text-muted-foreground">
+        <div className="flex items-center justify-between border-t border-border px-4 py-2.5 text-xs text-muted-foreground">
           <span className="font-mono">↑↓ navigate · ↵ select</span>
-          <span className="font-mono">Signal Lab · ⌘K</span>
+          <span className="font-mono">
+            Signal Lab · {modKey}K
+          </span>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

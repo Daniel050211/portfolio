@@ -36,7 +36,7 @@ export function Skills() {
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
             Signal strength
           </h2>
-          <p className="mt-4 max-w-xl text-base text-foreground/65">
+          <p className="mt-4 max-w-xl text-base text-foreground/75">
             A working toolbox across models, data, hardware, and product
             engineering — with languages for Hong Kong and beyond.
           </p>
@@ -50,18 +50,11 @@ export function Skills() {
                   <h3 className="font-display text-lg font-semibold text-foreground">
                     {group.group}
                   </h3>
-                  <span className="font-mono text-sm font-semibold text-accent">
-                    {group.level}%
-                  </span>
                 </div>
 
                 <div
                   className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted"
-                  role="progressbar"
-                  aria-valuenow={group.level}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`${group.group} proficiency`}
+                  aria-hidden="true"
                 >
                   <div
                     className="skill-bar-fill h-full rounded-full bg-gradient-to-r from-accent to-secondary"

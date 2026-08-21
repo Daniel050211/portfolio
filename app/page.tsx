@@ -16,7 +16,7 @@ export default function Home() {
       <CursorGlow />
       <ScrollProgress />
       <Navigation />
-      <main>
+      <main id="main-content">
         <Hero />
         <Marquee />
         <Projects />

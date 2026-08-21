@@ -1,6 +1,7 @@
 import { ArrowUp, Mail } from "lucide-react";
 import { InstagramIcon } from "@/components/instagram-icon";
-import { navLinks, site } from "@/lib/site";
+import { GithubIcon } from "@/components/github-icon";
+import { hasProfileUrl, navLinks, site } from "@/lib/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -52,15 +53,28 @@ export function Footer() {
             >
               <Mail className="h-5 w-5" />
             </a>
-            <a
-              href={site.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-on-primary/65 transition-colors hover:text-accent"
-            >
-              <InstagramIcon className="h-5 w-5" />
-            </a>
+            {hasProfileUrl(site.github) && (
+              <a
+                href={site.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="text-on-primary/65 transition-colors hover:text-accent"
+              >
+                <GithubIcon className="h-5 w-5" />
+              </a>
+            )}
+            {hasProfileUrl(site.instagram) && (
+              <a
+                href={site.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-on-primary/65 transition-colors hover:text-accent"
+              >
+                <InstagramIcon className="h-5 w-5" />
+              </a>
+            )}
             <a
               href={site.whatsapp}
               target="_blank"

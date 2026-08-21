@@ -28,7 +28,8 @@ npm run lint      # ESLint 檢查
 所有個人資料集中在 [`lib/site.ts`](lib/site.ts)，包含：
 
 - 姓名、職稱、學校、tagline、Email、電話、WhatsApp、狀態
-- **Instagram**：把 `instagram` 欄位換成你的真實帳號網址
+- **Instagram**：把 `instagram` 欄位換成你的真實帳號網址（留著首頁網址則不會顯示卡片）
+- **GitHub**：把 `github` 欄位填成 `https://github.com/你的帳號` 才會出現聯絡入口
 - 專案資料（`projects` 陣列）、焦點領域、經歷、獎項、教育、技能、統計數字
 
 更新後重新執行 `npm run build` 即可。

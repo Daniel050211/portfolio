@@ -3,6 +3,7 @@ import { DM_Sans, JetBrains_Mono, Syne } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
+import { SkipLink } from "@/components/skip-link";
 import { site } from "@/lib/site";
 
 const syne = Syne({
@@ -77,21 +78,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
       <body
         className={`${syne.variable} ${dmSans.variable} ${jetbrains.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
+          <SkipLink />
           <SmoothScroll>{children}</SmoothScroll>
         </ThemeProvider>
       </body>

@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import { ArrowDown, ArrowUpRight, Download, Sparkles } from "lucide-react";
 import { site, stats } from "@/lib/site";
+import { useModKeyLabel } from "@/lib/mod-key";
 import { gsap } from "gsap";
 import { CountUp } from "@/components/count-up";
 
 export function Hero() {
   const scopeRef = useRef<HTMLDivElement>(null);
+  const modKey = useModKeyLabel();
 
   useEffect(() => {
     const el = scopeRef.current;
@@ -71,7 +73,6 @@ export function Hero() {
       />
       <div aria-hidden="true" className="noise absolute inset-0" />
 
-      {/* decorative signal line */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-0 right-0 top-1/3 h-px overflow-hidden opacity-40"
@@ -93,50 +94,50 @@ export function Hero() {
           </div>
           <div
             data-hero-chip
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/70 px-3 py-1.5 font-mono text-[11px] text-muted-foreground"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface/70 px-3 py-1.5 font-mono text-xs text-muted-foreground"
           >
             <Sparkles className="h-3 w-3 text-amber" />
             PolyU · AI &amp; IE · {site.location}
           </div>
         </div>
 
-        <h1 className="mt-8 max-w-5xl">
+        <p
+          data-hero-chip
+          className="mt-8 font-mono text-xs uppercase tracking-[0.16em] text-accent"
+        >
+          {site.role}
+        </p>
+
+        <h1 className="mt-3 max-w-5xl">
           <span className="block overflow-hidden">
             <span
               data-hero-title
-              className="block font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+              className="block font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-7xl lg:text-8xl"
             >
-              Systems that
-            </span>
-          </span>
-          <span className="block overflow-hidden">
-            <span
-              data-hero-title
-              className="block font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-            >
-              <span className="text-accent">see</span>
-              <span className="text-muted-foreground/50"> · </span>
-              <span className="text-secondary">reason</span>
-              <span className="text-muted-foreground/50"> · </span>
-              <span className="text-amber">act</span>
-            </span>
-          </span>
-          <span className="block overflow-hidden">
-            <span
-              data-hero-title
-              className="mt-1 block font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-            >
-              in the real world.
+              {site.name}
             </span>
           </span>
         </h1>
 
+        <p className="mt-5 max-w-5xl overflow-hidden">
+          <span
+            data-hero-title
+            className="block font-display text-2xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+          >
+            Systems that <span className="text-accent">see</span>
+            <span className="text-muted-foreground/50"> · </span>
+            <span className="text-secondary">reason</span>
+            <span className="text-muted-foreground/50"> · </span>
+            <span className="text-amber">act</span>
+            <span className="text-foreground"> in the real world.</span>
+          </span>
+        </p>
+
         <p
           data-hero-tagline
-          className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/65 sm:text-lg"
+          className="mt-6 max-w-2xl text-base leading-relaxed text-foreground/75 sm:text-lg"
         >
-          I&apos;m <span className="font-semibold text-foreground">{site.name}</span>
-          — {site.role} at {site.institution}. This is my{" "}
+          {site.role} at {site.institution}. This is my{" "}
           <span className="text-accent">Signal Lab</span>: a live portfolio of
           AI automation, product tools, quant research, and systems engineering.
         </p>
@@ -147,7 +148,7 @@ export function Hero() {
             href="#lab"
             className="group inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-on-primary transition-all duration-300 hover:bg-accent hover:shadow-lg hover:shadow-[var(--glow)]"
           >
-            Enter the Lab
+            View selected work
             <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
           <a
@@ -163,15 +164,13 @@ export function Hero() {
             data-hero-cta
             type="button"
             onClick={() =>
-              window.dispatchEvent(
-                new KeyboardEvent("keydown", { key: "k", metaKey: true })
-              )
+              window.dispatchEvent(new Event("open-command-palette"))
             }
-            className="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-dashed border-border px-5 text-sm font-medium text-muted-foreground transition-all duration-300 hover:border-accent/50 hover:text-accent sm:ml-1"
+            className="hidden h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-dashed border-border px-5 text-sm font-medium text-muted-foreground transition-all duration-300 hover:border-accent/50 hover:text-accent sm:ml-1 md:inline-flex"
           >
-            Press
-            <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px]">
-              ⌘K
+            Search
+            <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-xs">
+              {modKey}K
             </kbd>
           </button>
         </div>
@@ -186,7 +185,7 @@ export function Hero() {
               <p className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                 <CountUp value={stat.value} />
               </p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
                 {stat.label}
               </p>
             </div>
@@ -196,7 +195,7 @@ export function Hero() {
 
       <a
         href="#lab"
-        aria-label="Scroll to lab section"
+        aria-label="Scroll to selected work"
         className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 text-foreground/35 transition-colors hover:text-accent sm:block"
       >
         <ArrowDown className="h-5 w-5 animate-bounce" />

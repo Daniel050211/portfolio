@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { X } from "lucide-react";
 import type { projects } from "@/lib/site";
+import { ProjectCover } from "@/components/project-cover";
 
 type Project = (typeof projects)[number];
 
@@ -13,48 +14,50 @@ export function ProjectModal({
   project: Project | null;
   onClose: () => void;
 }) {
-  useEffect(() => {
-    if (!project) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (project && !dialog.open) dialog.showModal();
+    if (!project && dialog.open) dialog.close();
+    document.body.style.overflow = project ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
     };
-  }, [project, onClose]);
-
-  if (!project) return null;
+  }, [project]);
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:px-6"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="project-modal-title"
+    <dialog
+      ref={dialogRef}
+      className="project-dialog"
+      aria-labelledby={project ? "project-modal-title" : undefined}
+      aria-label={project ? undefined : "Project details"}
+      onClose={onClose}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
-      <button
-        type="button"
-        className="cmd-backdrop absolute inset-0 cursor-pointer"
-        aria-label="Close project details"
-        onClick={onClose}
-      />
+      {project && (
       <div
         className="modal-enter relative z-10 max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-t-3xl border border-border bg-surface shadow-2xl sm:rounded-3xl"
         data-lenis-prevent
       >
+        <ProjectCover id={project.id} className="h-40 w-full sm:h-48" />
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border bg-surface/95 px-6 py-5 backdrop-blur-md sm:px-8">
           <div>
-            <p className="mono-label text-accent">{project.category} · {project.year}</p>
+            <p className="mono-label text-accent">
+              {project.category} · {project.year}
+            </p>
             <h2
               id="project-modal-title"
               className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
             >
               {project.title}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{project.subtitle}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {project.subtitle}
+            </p>
           </div>
           <button
             type="button"
@@ -67,7 +70,7 @@ export function ProjectModal({
         </div>
 
         <div className="space-y-8 px-6 py-7 sm:px-8">
-          <p className="text-base leading-relaxed text-foreground/75">
+          <p className="text-base leading-relaxed text-foreground/80">
             {project.summary}
           </p>
 
@@ -132,6 +135,7 @@ export function ProjectModal({
           )}
         </div>
       </div>
-    </div>
+      )}
+    </dialog>
   );
 }

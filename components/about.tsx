@@ -31,7 +31,7 @@ export function About() {
 
           <div className="space-y-8">
             <Reveal delay={80}>
-              <p className="text-base leading-relaxed text-foreground/70 sm:text-lg">
+              <p className="text-base leading-relaxed text-foreground/80 sm:text-lg">
                 I&apos;m {site.fullName}, studying{" "}
                 <span className="font-semibold text-foreground">
                   Artificial Intelligence &amp; Information Engineering
@@ -40,7 +40,7 @@ export function About() {
                 actuation meet — computer vision, robotic integration, multi-agent
                 automation, and product systems people can ship.
               </p>
-              <p className="mt-4 text-base leading-relaxed text-foreground/70 sm:text-lg">
+              <p className="mt-4 text-base leading-relaxed text-foreground/80 sm:text-lg">
                 I build with a hypothesis-driven loop: frame the question, gather
                 signal, design the system, measure the result. From sensor fusion
                 on embedded hardware to content pipelines with human review gates,

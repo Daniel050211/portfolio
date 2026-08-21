@@ -9,7 +9,8 @@ export const site = {
   email: "daniel0211.hau@connect.polyu.hk",
   phone: "+852 9866 5515",
   whatsapp: "https://wa.me/85298665515",
-  instagram: "https://www.instagram.com/",
+  instagram: "https://www.instagram.com/", // replace with a real profile URL to show the card
+  github: "", // e.g. https://github.com/your-username
   resumeUrl: "/Daniel-H-CV.pdf",
   location: "Hong Kong SAR, China",
   availability: "Open to internships & collaborations",
@@ -17,7 +18,7 @@ export const site = {
 } as const;
 
 export const navLinks = [
-  { label: "Lab", href: "#lab", id: "lab" },
+  { label: "Work", href: "#lab", id: "lab" },
   { label: "About", href: "#about", id: "about" },
   { label: "Journey", href: "#journey", id: "journey" },
   { label: "Skills", href: "#skills", id: "skills" },
@@ -291,8 +292,20 @@ export const languages = [
 ] as const;
 
 export const stats = [
-  { label: "Featured builds", value: "6+" },
+  { label: "Selected systems", value: "6+" },
   { label: "Scholarships & lists", value: "5" },
   { label: "Service hours", value: "30+" },
-  { label: "Languages", value: "3" },
+  { label: "Expected grad", value: "2027" },
 ] as const;
+
+/** True when a social URL points at a real profile, not a network homepage. */
+export function hasProfileUrl(url: string) {
+  if (!url.trim()) return false;
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.replace(/\/+$/, "");
+    return path.length > 0;
+  } catch {
+    return false;
+  }
+}

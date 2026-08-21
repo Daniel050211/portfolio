@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Menu, Search, X } from "lucide-react";
 import { navLinks, site } from "@/lib/site";
+import { useModKeyLabel } from "@/lib/mod-key";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/command-palette";
 
@@ -11,12 +12,19 @@ export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cmdOpen, setCmdOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("");
+  const modKey = useModKeyLabel();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const openPalette = () => setCmdOpen(true);
+    window.addEventListener("open-command-palette", openPalette);
+    return () => window.removeEventListener("open-command-palette", openPalette);
   }, []);
 
   useEffect(() => {
@@ -83,7 +91,7 @@ export function Navigation() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className={`relative rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                  className={`relative inline-flex min-h-10 items-center rounded-full px-3.5 text-sm font-medium transition-colors ${
                     isActive
                       ? "text-accent"
                       : "text-foreground/65 hover:text-foreground"
@@ -91,7 +99,7 @@ export function Navigation() {
                 >
                   {link.label}
                   {isActive && (
-                    <span className="absolute inset-x-3 -bottom-0.5 h-px bg-accent" />
+                    <span className="absolute inset-x-3 bottom-1.5 h-px bg-accent" />
                   )}
                 </a>
               );
@@ -108,7 +116,7 @@ export function Navigation() {
               <Search className="h-3.5 w-3.5" />
               <span className="hidden lg:inline">Search</span>
               <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]">
-                ⌘K
+                {modKey}K
               </kbd>
             </button>
             <ThemeToggle />

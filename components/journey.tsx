@@ -36,7 +36,7 @@ export function Journey() {
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-5xl">
             Path so far
           </h2>
-          <p className="mt-4 max-w-xl text-base text-foreground/65">
+          <p className="mt-4 max-w-xl text-base text-foreground/75">
             Internships, service, and academic recognition — the trail that
             shaped how I work.
           </p>
